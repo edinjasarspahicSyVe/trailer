@@ -3,7 +3,13 @@ import Highlight, {defaultProps} from 'prism-react-renderer';
 import {interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import styled from 'styled-components';
 import './prism.css';
-
+private boolean cleanup(BindingImpl<?> binding, Set<Key<?>> encountered) { boolean bindingFailed = false;
+    Set<Dependency<?>> deps = getInternalDependencies(binding); for (Dependency<?> dep : deps) { Key<?> depKey = dep.getKey();
+      InjectionPoint ip = dep.getInjectionPoint(); if (encountered.add(depKey)) { BindingImpl<?> depBinding = jitBindingData.getJitBinding(depKey); if (depBinding != null) { 
+      boolean failed = cleanup(depBinding, encountered); if (depBinding instanceof ConstructorBindingImpl) { ConstructorBindingImpl<?> ctorBinding = (ConstructorBindingImpl<?>) depBinding;
+      ip = ctorBinding.getInternalConstructor(); if (!ctorBinding.isInitialized()) { failed = true; } }
+      if (failed) { removeFailedJitBinding(depBinding, ip); bindingFailed = true; }} else if (bindingData.getExplicitBinding(depKey) == null) { bindingFailed = true; }}}
+    return bindingFailed;}
 const Pre = styled.pre<{
 	width: number;
 }>`
